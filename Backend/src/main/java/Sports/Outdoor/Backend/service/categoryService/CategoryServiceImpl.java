@@ -56,10 +56,12 @@ public class CategoryServiceImpl implements CategoryService{
         if(category!=null){
             category.setName(dto.getName());
             category.setSlug(dto.getSlug());
+            Category updated = categoryRepository.save(category);
+            CategoryResponseDto categoryResponseDto=modelMapper.map(updated,CategoryResponseDto.class);
+            return categoryResponseDto;
         }
-        Category updated = categoryRepository.save(category);
-        CategoryResponseDto categoryResponseDto=modelMapper.map(updated,CategoryResponseDto.class);
-        return categoryResponseDto;
+        throw new NotFoundException("Güncellemek istediğiniz category bulunamadı");
+
     }
 
     @Override

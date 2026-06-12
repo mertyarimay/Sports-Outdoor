@@ -6,17 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class CategoryRequestDto {
+@NoArgsConstructor
+public class BrandRequestDto {
 
-    private Long id;
-
-    @NotBlank(message = "Category name cannot be empty")
+    @NotBlank(message = "Brand name cannot be empty")
     private String name;
 
-    @NotBlank(message = "Slug cannot be empty")
-    private String slug;
+    @NotBlank(message = "Logo url cannot be empty")
+    private String logoUrl;
 
-    private Long parentId;
+    private String description;
 }
