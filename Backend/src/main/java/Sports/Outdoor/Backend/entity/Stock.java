@@ -13,7 +13,7 @@ public class Stock {
     private Integer quantity;
 
 
-    @OneToOne (fetch = FetchType.EAGER)
+    @OneToOne (fetch = FetchType.LAZY)
     private ProductVariant variant;
 
 }
