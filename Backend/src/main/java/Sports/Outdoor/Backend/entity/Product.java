@@ -22,6 +22,7 @@ public class Product {
     private BigDecimal price;
     private BigDecimal discountPrice;
     private Boolean active;  //ürün satıştamı
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
 
