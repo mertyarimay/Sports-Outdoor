@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "wish_list")
+@Table(name = "wish_list") //favori listesi bu favori ürünler wishlistitemde tutulur wishlist itemde burda tutulur
 @Data
 public class Wishlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 }
