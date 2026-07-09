@@ -26,4 +26,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
+
+    @Column(unique = true)
+    private String orderNumber;
 }

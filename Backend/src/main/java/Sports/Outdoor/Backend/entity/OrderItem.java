@@ -22,4 +22,6 @@ public class OrderItem {
 
     @ManyToOne (fetch = FetchType.LAZY)
     private ProductVariant variant;
+
+    private BigDecimal totalPrice;
 }
