@@ -17,12 +17,12 @@ import java.util.List;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/pay")
     public ResponseEntity<PaymentResponseDto> pay(@Valid @RequestBody PaymentRequestDto dto, Authentication authentication) {
         return ResponseEntity.ok(paymentService.pay(dto, authentication));
     }
 
-    @GetMapping
+    @GetMapping("/myPays")
     public ResponseEntity<List<PaymentResponseDto>> getMyPayments(Authentication authentication) {
 
         return ResponseEntity.ok(paymentService.getMyPayments(authentication));

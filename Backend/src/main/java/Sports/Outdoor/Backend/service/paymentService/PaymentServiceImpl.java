@@ -61,17 +61,11 @@ public class PaymentServiceImpl implements PaymentService{
             throw new BusinessExcepiton("Bu sipariş zaten ödenmiştir.");
         }
 
-        // Daha önce başarılı ödeme yapılmış mı?
-        if (paymentRepository.existsByOrderIdAndStatus(order.getId(), PaymentStatus.SUCCESS)) {
-
-            throw new BusinessExcepiton("Ödeme zaten tamamlandı.");
-        }
-
         // Fake ödeme sistemi
         PaymentResult result = paymentGateway.processPayment(dto, order.getTotalPrice());
 
-        // Payment oluştur
-        Payment payment = new Payment();
+        // Daha önce ödeme kaydı var mı?
+        Payment payment = paymentRepository.findByOrderId(order.getId()).orElse(new Payment());
 
         payment.setOrder(order);
         payment.setAmount(order.getTotalPrice());
@@ -82,7 +76,6 @@ public class PaymentServiceImpl implements PaymentService{
         if (result.isSuccess()) {
 
             payment.setStatus(PaymentStatus.SUCCESS);
-
             payment.setFailureReason(null);
 
             order.setStatus(OrderStatus.PAID);
@@ -90,15 +83,15 @@ public class PaymentServiceImpl implements PaymentService{
         } else {
 
             payment.setStatus(PaymentStatus.FAILED);
-
             payment.setFailureReason(result.getMessage());
 
         }
 
         orderRepository.save(order);
-        paymentRepository.save(payment);
 
-        return convertToResponse(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return convertToResponse(savedPayment);
     }
 
     @Override  //kendi ödeme geçmişini görme

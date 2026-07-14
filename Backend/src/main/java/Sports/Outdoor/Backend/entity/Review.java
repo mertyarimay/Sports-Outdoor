@@ -15,13 +15,21 @@ public class Review {
 
     private Integer rating;
 
+    @Column(length = 1000)
     private String comment;
 
     private LocalDateTime createdAt;
 
     @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 }

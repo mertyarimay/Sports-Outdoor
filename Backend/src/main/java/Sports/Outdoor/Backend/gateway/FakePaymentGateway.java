@@ -43,9 +43,9 @@ public class FakePaymentGateway implements PaymentGateway{
         if (expiryDate.isBefore(YearMonth.now())) {
             return new PaymentResult(false, transactionId, "Card has expired.");
         }
-        /*if (dto.getCardNumber().equals("4111111111111111")) {
+        if (dto.getCardNumber().equals("4111111111111111")) {
             return new PaymentResult(true, transactionId, "Payment successful.");
-        }*/
+        }
 
         // Fake banka cevabı
         return new PaymentResult(false, transactionId, "Payment declined by bank.");
