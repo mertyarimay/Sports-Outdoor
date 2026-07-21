@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,34 +16,42 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/stocks")
 public class StockController {
+
     private final StockService stockService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")
-    public StockResponseDto create(@Valid @RequestBody StockRequestDto dto){
-        StockResponseDto stockResponseDto=stockService.create(dto);
-        return  stockResponseDto;
+    public StockResponseDto create(@Valid @RequestBody StockRequestDto dto) {
+        return stockService.create(dto);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getById/{id}")
-    public StockResponseDto getById(@PathVariable Long id){
-        StockResponseDto stockResponseDto=stockService.getById(id);
-        return stockResponseDto;
+    public StockResponseDto getById(@PathVariable Long id) {
+        return stockService.getById(id);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
-    public List<StockResponseDto>getAll(){
-        List<StockResponseDto>stockResponseDtos=stockService.getAll();
-        return stockResponseDtos;
+    public List<StockResponseDto> getAll() {
+        return stockService.getAll();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/{id}")
-    public StockResponseDto update(@PathVariable Long id,@Valid @RequestBody StockRequestDto dto){
-        StockResponseDto stockResponseDto=stockService.update(id,dto);
-        return stockResponseDto;
+    public StockResponseDto update(@PathVariable Long id, @Valid @RequestBody StockRequestDto dto) {
+        return stockService.update(id, dto);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object>delete(@PathVariable Long id){
-        boolean delete=stockService.delete(id);
-        if(delete==true){
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        boolean delete = stockService.delete(id);
+
+        if (delete) {
             return ResponseEntity.ok("Silme İşlemi Başarılı");
         }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Silme İşlemi Başarısız");
     }
 }

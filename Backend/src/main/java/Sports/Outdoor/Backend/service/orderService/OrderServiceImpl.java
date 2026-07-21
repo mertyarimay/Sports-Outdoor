@@ -1,14 +1,17 @@
 package Sports.Outdoor.Backend.service.orderService;
 
 import Sports.Outdoor.Backend.dto.request.OrderRequestDto;
+import Sports.Outdoor.Backend.dto.request.UpdateOrderStatusRequestDto;
 import Sports.Outdoor.Backend.dto.response.OrderItemResponseDto;
 import Sports.Outdoor.Backend.dto.response.OrderResponseDto;
 import Sports.Outdoor.Backend.entity.*;
+import Sports.Outdoor.Backend.enums.CouponType;
 import Sports.Outdoor.Backend.enums.OrderStatus;
 import Sports.Outdoor.Backend.exception.BadRequestException;
 import Sports.Outdoor.Backend.exception.BusinessExcepiton;
 import Sports.Outdoor.Backend.exception.NotFoundException;
 import Sports.Outdoor.Backend.repository.*;
+import Sports.Outdoor.Backend.service.couponService.CouponService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,6 +35,12 @@ public class OrderServiceImpl implements OrderService{
     private final CartItemRepository cartItemRepository;
 
     private final StockRepository stockRepository;
+
+    private final CouponService couponService;
+
+    private final CouponUsageRepository couponUsageRepository;
+
+    private final CouponRepository couponRepository;
 
 
     @Override
@@ -81,6 +90,35 @@ public class OrderServiceImpl implements OrderService{
             totalPrice = totalPrice.add(unitPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
         }
 
+        Coupon coupon = null;
+
+        if (dto.getCouponCode() != null && !dto.getCouponCode().isBlank()) {
+
+            coupon = couponService.validateCoupon(dto.getCouponCode(), totalPrice);
+
+            if (couponUsageRepository.existsByUserIdAndCouponId(user.getId(), coupon.getId())) {
+
+                throw new BusinessExcepiton("You have already used this coupon");
+            }
+
+            BigDecimal discount;
+
+            if (coupon.getType() == CouponType.PERCENTAGE) {
+
+                discount = totalPrice.multiply(coupon.getDiscountValue().divide(BigDecimal.valueOf(100)));
+            }
+            else {
+
+                discount = coupon.getDiscountValue();
+            }
+
+            totalPrice = totalPrice.subtract(discount);
+
+            if (totalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                totalPrice = BigDecimal.ZERO;
+            }
+        }
+
         // Order oluştur
         Order order = new Order();
 
@@ -116,6 +154,22 @@ public class OrderServiceImpl implements OrderService{
 
             stock.setQuantity(stock.getQuantity() - cartItem.getQuantity());
             stockRepository.save(stock);
+        }
+        if (coupon != null) {
+
+            coupon.setUsedCount(coupon.getUsedCount() + 1);
+
+            couponRepository.save(coupon);
+
+            CouponUsageEntity couponUsage = new CouponUsageEntity();
+
+            couponUsage.setUser(user);
+
+            couponUsage.setCoupon(coupon);
+
+            couponUsage.setUsedAt(LocalDateTime.now());
+
+            couponUsageRepository.save(couponUsage);
         }
 
         // Sepeti temizle
@@ -190,6 +244,41 @@ public class OrderServiceImpl implements OrderService{
         return convertToResponse(order);
     }
 
+    @Override
+    public List<OrderResponseDto> getAllOrders() {
+
+        return orderRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    @Override
+    public OrderResponseDto getOrderByIdForAdmin(Long id) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("Order not found"));
+
+        return convertToResponse(order);
+    }
+
+
+    @Override
+    @Transactional
+    public OrderResponseDto updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("Order not found"));
+
+        order.setStatus(dto.getStatus());
+
+        orderRepository.save(order);
+
+        return convertToResponse(order);
+    }
+
 
     private OrderItemResponseDto convertToOrderItemResponse(OrderItem orderItem) {
         OrderItemResponseDto dto = new OrderItemResponseDto();
@@ -214,7 +303,6 @@ public class OrderServiceImpl implements OrderService{
 
         return dto;
     }
-
     private OrderResponseDto convertToResponse(Order order) {
 
         OrderResponseDto dto = new OrderResponseDto();

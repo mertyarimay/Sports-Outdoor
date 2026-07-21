@@ -12,4 +12,6 @@ public class OrderRequestDto {
 
     @NotNull(message = "Address id cannot be null")
     private Long addressId;
+
+    private String couponCode;
 }
