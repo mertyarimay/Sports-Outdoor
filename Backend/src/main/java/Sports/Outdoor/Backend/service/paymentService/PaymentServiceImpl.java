@@ -14,6 +14,7 @@ import Sports.Outdoor.Backend.gateway.PaymentResult;
 import Sports.Outdoor.Backend.repository.OrderRepository;
 import Sports.Outdoor.Backend.repository.PaymentRepository;
 import Sports.Outdoor.Backend.repository.UserRepository;
+import Sports.Outdoor.Backend.service.notificationService.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,6 +34,8 @@ public class PaymentServiceImpl implements PaymentService{
     private final UserRepository userRepository;
 
     private final PaymentGateway paymentGateway;
+
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -90,6 +93,14 @@ public class PaymentServiceImpl implements PaymentService{
         orderRepository.save(order);
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        if (result.isSuccess()) {
+
+            notificationService.createNotification(order.getUser(), "Payment Successful", "Your payment for order "
+                            + order.getOrderNumber()
+                            + " was successful."
+            );
+        }
 
         return convertToResponse(savedPayment);
     }

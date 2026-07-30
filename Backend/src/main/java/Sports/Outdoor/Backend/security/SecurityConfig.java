@@ -27,12 +27,57 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
+
+                        // Authentication
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/**"
+                        ).permitAll()
+
+                        // Product
+                        .requestMatchers(
+                                "/api/products/getAll",
+                                "/api/products/getById/**"
+                        ).permitAll()
+                        // Product Variant
+                        .requestMatchers(
+                                "/api/product-variants/getAll",
+                                "/api/product-variants/getById/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/product-images/getAll",
+                                "/api/product-images/getById/**"
+                        ).permitAll()
+                        // Category
+                        .requestMatchers(
+                                "/api/categories/getAll",
+                                "/api/categories/getById/**"
+                        ).permitAll()
+
+                        // Brand
+                        .requestMatchers(
+                                "/api/brands/getAll",
+                                "/api/brands/getById/**"
+                        ).permitAll()
+
+                        // Campaign
+                        .requestMatchers(
+                                "/api/campaigns/getAll",
+                                "/api/campaigns/getById/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "/api/reviews/product/*",
+                                "/api/reviews/product/*/average-rating",
+                                "/api/reviews/product/*/review-count"
+                        ).permitAll()
+
+                        // Swagger
+                        .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        // Diğer tüm endpointler giriş ister
                         .anyRequest().authenticated()
                 )
 

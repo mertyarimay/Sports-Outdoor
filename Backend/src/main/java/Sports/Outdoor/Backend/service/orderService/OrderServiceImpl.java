@@ -12,6 +12,7 @@ import Sports.Outdoor.Backend.exception.BusinessExcepiton;
 import Sports.Outdoor.Backend.exception.NotFoundException;
 import Sports.Outdoor.Backend.repository.*;
 import Sports.Outdoor.Backend.service.couponService.CouponService;
+import Sports.Outdoor.Backend.service.notificationService.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -41,6 +42,9 @@ public class OrderServiceImpl implements OrderService{
     private final CouponUsageRepository couponUsageRepository;
 
     private final CouponRepository couponRepository;
+
+    private final  NotificationService notificationService;
+
 
 
     @Override
@@ -130,6 +134,9 @@ public class OrderServiceImpl implements OrderService{
         order.setOrderNumber(generateOrderNumber());
 
         Order savedOrder = orderRepository.save(order);
+
+        notificationService.createNotification(user, "Order Created", "Your order "
+                + savedOrder.getOrderNumber() + " has been created successfully.");
 
         // OrderItem oluştur ve stok düş
         for (CartItem cartItem : cartItems) {
@@ -247,7 +254,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<OrderResponseDto> getAllOrders() {
 
-        return orderRepository.findAll()
+        return orderRepository.findAllByOrderByOrderDateDesc()
                 .stream()
                 .map(this::convertToResponse)
                 .toList();
@@ -269,12 +276,48 @@ public class OrderServiceImpl implements OrderService{
     public OrderResponseDto updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
 
         Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("Order not found"));
+                .orElseThrow(() -> new NotFoundException("Order not found"));
 
-        order.setStatus(dto.getStatus());
+        OrderStatus current = order.getStatus();
+        OrderStatus next = dto.getStatus();
+
+        if (current == OrderStatus.CANCELLED) {
+            throw new BusinessExcepiton("Cancelled orders cannot be updated.");
+        }
+
+        if (current == OrderStatus.DELIVERED) {
+            throw new BusinessExcepiton("Delivered orders cannot be updated.");
+        }
+
+        order.setStatus(next);
 
         orderRepository.save(order);
+
+        String message;
+
+        switch (next) {
+
+            case PREPARING ->
+                    message = "Your order is being prepared.";
+
+            case SHIPPED ->
+                    message = "Your order has been shipped.";
+
+            case DELIVERED ->
+                    message = "Your order has been delivered.";
+
+            case CANCELLED ->
+                    message = "Your order has been cancelled.";
+
+            default ->
+                    message = "Your order status has been updated.";
+        }
+
+        notificationService.createNotification(
+                order.getUser(),
+                "Order Status Updated",
+                message
+        );
 
         return convertToResponse(order);
     }

@@ -29,14 +29,17 @@ public class CartItemController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long id) {
-        boolean delete=cartItemService.delete(id);
-        if(delete==true){
+    public ResponseEntity<Object> delete(@PathVariable Long id, Authentication authentication) {
+
+        boolean delete = cartItemService.delete(id, authentication);
+
+        if (delete) {
             return ResponseEntity.ok("Silme İşlemi Başarılı");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Silme İşlemi Başarısız");
-    }
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Silme İşlemi Başarısız");
+    }
 
 
 }

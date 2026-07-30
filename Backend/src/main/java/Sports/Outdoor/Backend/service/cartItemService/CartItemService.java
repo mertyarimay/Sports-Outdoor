@@ -11,5 +11,5 @@ public interface CartItemService {
 
     List<CartItemResponseDto> getMyCartItems(Authentication authentication);
 
-    boolean delete(Long id);
+    boolean delete(Long id,Authentication authentication);
 }

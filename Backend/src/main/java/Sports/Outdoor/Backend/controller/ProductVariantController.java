@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/product-variants")
 public class ProductVariantController {
     private final ProductVariantService productVariantService;
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")
     public ProductVariantResponseDto create(@Valid @RequestBody ProductVariantRequestDto dto){
         ProductVariantResponseDto productVariantResponseDto=productVariantService.create(dto);
@@ -34,11 +35,13 @@ public class ProductVariantController {
         return productVariantResponseDtos;
 
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/{id}")
     public ProductVariantResponseDto update(@Valid @RequestBody ProductVariantRequestDto dto,@PathVariable Long id){
         ProductVariantResponseDto productVariantResponseDto=productVariantService.update(id,dto);
         return productVariantResponseDto;
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object>delete(@PathVariable Long id){
         boolean delete=productVariantService.delete(id);

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/product-images")
 public class ProductImageController {
     private final ProductImageService productImageService;
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")
     public ProductImageResponseDto craete(@Valid @RequestBody ProductImageRequestDto dto){
         ProductImageResponseDto productImageResponseDto=productImageService.create(dto);
@@ -33,12 +34,13 @@ public class ProductImageController {
         List<ProductImageResponseDto>productImageResponseDtos=productImageService.getAll();
         return productImageResponseDtos;
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/{id}")
     public ProductImageResponseDto update(@PathVariable Long id,@Valid @RequestBody ProductImageRequestDto dto){
         ProductImageResponseDto productImageResponseDto=productImageService.update(id,dto);
         return productImageResponseDto;
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object>delete(@PathVariable Long id){
         boolean delete=productImageService.delete(id);

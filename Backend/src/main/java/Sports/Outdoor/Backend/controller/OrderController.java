@@ -50,8 +50,8 @@ public class OrderController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PatchMapping("/admin/{id}/status")
-    public OrderResponseDto updateOrderStatus(@PathVariable Long id, @RequestBody UpdateOrderStatusRequestDto dto) {
+    @PutMapping("/admin/{id}/status")
+    public OrderResponseDto updateOrderStatus(@PathVariable Long id, @Valid @RequestBody UpdateOrderStatusRequestDto dto) {
         return orderService.updateOrderStatus(id, dto);
     }
 

@@ -24,12 +24,12 @@ public class CouponController {
     public CouponResponseDto create(@Valid @RequestBody CouponRequestDto dto) {
         return couponService.create(dto);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getById/{id}")
     public CouponResponseDto getById(@PathVariable Long id) {
         return couponService.getById(id);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
     public List<CouponResponseDto> getAll() {
         return couponService.getAll();

@@ -7,6 +7,7 @@ import Sports.Outdoor.Backend.exception.BusinessExcepiton;
 import Sports.Outdoor.Backend.exception.NotFoundException;
 import Sports.Outdoor.Backend.repository.*;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -90,20 +91,20 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public boolean delete(Long id) {
-        CartItem cartItem=cartItemRepository.findById(id).orElse(null);
-        if(cartItem==null){
-            throw new NotFoundException("Car item bulunamadı");
-        }
-        cartItemRepository.deleteById(id);
-        if(!cartItemRepository.existsById(id)){
-            return true;
-        }
-        return false;
+    public boolean delete(Long id,Authentication authentication) {
+        CartItem cartItem = cartItemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cart item not found"));
 
+        User user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
+        if (!cartItem.getCart().getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You cannot delete another user's cart item.");
+        }
+
+        cartItemRepository.delete(cartItem);
+        return true;
     }
-
     private CartItemResponseDto convertToResponse(CartItem cartItem) {
 
         CartItemResponseDto dto = new CartItemResponseDto();
