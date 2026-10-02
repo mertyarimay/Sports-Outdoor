@@ -54,6 +54,21 @@ public class ProductVariantServiceImpl implements ProductVariantService{
         List<ProductVariantResponseDto>productVariantResponseDtos=productVariantList.stream().map(productVariant -> modelMapper.map(productVariant,ProductVariantResponseDto.class)).collect(Collectors.toList());
         return productVariantResponseDtos;
     }
+    @Override
+    public List<ProductVariantResponseDto> getByProductId(Long productId) {
+
+        List<ProductVariant> productVariantList =
+                productVariantRepository.findByProductId(productId);
+
+        return productVariantList.stream()
+                .map(productVariant ->
+                        modelMapper.map(
+                                productVariant,
+                                ProductVariantResponseDto.class
+                        )
+                )
+                .collect(Collectors.toList());
+    }
 
     @Override
     public ProductVariantResponseDto update(Long id, ProductVariantRequestDto dto) {

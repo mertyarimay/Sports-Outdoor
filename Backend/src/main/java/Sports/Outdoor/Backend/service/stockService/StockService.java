@@ -11,6 +11,7 @@ public interface StockService {
     StockResponseDto getById(Long id);
 
     List<StockResponseDto> getAll();
+    StockResponseDto getByVariantId(Long variantId);
 
     StockResponseDto update(Long id, StockRequestDto dto);
 

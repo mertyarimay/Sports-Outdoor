@@ -4,16 +4,19 @@ import Sports.Outdoor.Backend.dto.request.AddressRequestDto;
 import Sports.Outdoor.Backend.dto.response.AddressResponseDto;
 import Sports.Outdoor.Backend.service.addressService.AddressService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api/addresses")
+@RequiredArgsConstructor
 public class AddressController {
+
     private final AddressService addressService;
 
     @PostMapping("/create")
@@ -26,13 +29,24 @@ public class AddressController {
         return addressService.getMyAddresses(authentication);
     }
 
-    @PutMapping("/update/{id}")
+    @GetMapping("/{id}")
+    public AddressResponseDto getById(@PathVariable Long id, Authentication authentication) {
+        return addressService.getById(id, authentication);
+    }
+
+    @PutMapping("/{id}")
     public AddressResponseDto update(@PathVariable Long id, @Valid @RequestBody AddressRequestDto dto, Authentication authentication) {
         return addressService.update(id, dto, authentication);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Long id, Authentication authentication) {
-        addressService.delete(id, authentication);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id, Authentication authentication) {
+        Boolean deleted = addressService.delete(id, authentication);
+
+        if (deleted) {
+            return ResponseEntity.ok("Adres silme işlemi başarılı");
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Adres silinemedi");
     }
 }

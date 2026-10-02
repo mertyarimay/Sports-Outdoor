@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/cart-items")
 public class CartItemController {
+
     private final CartItemService cartItemService;
 
     @PostMapping("/create")
@@ -28,18 +29,20 @@ public class CartItemController {
         return cartItemService.getMyCartItems(authentication);
     }
 
+    @PutMapping("/update/{id}")
+    public CartItemResponseDto updateQuantity(@PathVariable Long id, @RequestParam Integer quantity, Authentication authentication) {
+        return cartItemService.updateQuantity(id, quantity, authentication);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id, Authentication authentication) {
 
-        boolean delete = cartItemService.delete(id, authentication);
+        boolean deleted = cartItemService.delete(id, authentication);
 
-        if (delete) {
+        if (deleted) {
             return ResponseEntity.ok("Silme İşlemi Başarılı");
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body("Silme İşlemi Başarısız");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Silme İşlemi Başarısız");
     }
-
-
 }

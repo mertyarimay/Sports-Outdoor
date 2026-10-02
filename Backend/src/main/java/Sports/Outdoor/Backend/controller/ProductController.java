@@ -30,9 +30,20 @@ public class ProductController {
         return productService.getById(id);
     }
 
+    @GetMapping("/getBySlug/{slug}")
+    public ProductResponseDto getBySlug(@PathVariable String slug) {
+        return productService.getBySlug(slug);
+    }
+
     @GetMapping("/getAll")
     public List<ProductResponseDto> getAll() {
         return productService.getAll();
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/admin/all")
+    public List<ProductResponseDto> getAllForAdmin() {
+        return productService.getAllForAdmin();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

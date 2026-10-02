@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "CartItem")
+@Table(name = "cart_items")
 @Data
 public class CartItem {
     @Id
@@ -14,9 +14,11 @@ public class CartItem {
     private Integer quantity;
 
     @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
     private Cart cart;
 
     @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name = "variant_id")
     private ProductVariant variant;
 
 

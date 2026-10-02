@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderResponseDto {
+
+    private Long id;
     private String orderNumber;
 
     private LocalDateTime orderDate;

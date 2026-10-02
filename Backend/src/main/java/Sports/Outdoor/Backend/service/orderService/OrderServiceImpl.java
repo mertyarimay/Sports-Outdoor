@@ -350,6 +350,8 @@ public class OrderServiceImpl implements OrderService{
 
         OrderResponseDto dto = new OrderResponseDto();
 
+        dto.setId(order.getId());
+
         dto.setOrderNumber(order.getOrderNumber());
 
         dto.setOrderDate(order.getOrderDate());

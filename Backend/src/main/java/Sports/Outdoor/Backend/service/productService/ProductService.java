@@ -15,4 +15,9 @@ public interface ProductService {
     ProductResponseDto update(Long id, ProductRequestDto dto);
 
     Boolean delete(Long id);
+
+
+    ProductResponseDto getBySlug(String slug);
+
+    List<ProductResponseDto> getAllForAdmin();
 }

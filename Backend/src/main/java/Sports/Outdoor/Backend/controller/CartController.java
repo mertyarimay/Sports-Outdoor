@@ -4,15 +4,13 @@ import Sports.Outdoor.Backend.dto.response.CartResponseDto;
 import Sports.Outdoor.Backend.service.cartService.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/carts")
 public class CartController {
+
     private final CartService cartService;
 
     @PostMapping("/create")
@@ -23,5 +21,10 @@ public class CartController {
     @GetMapping("/my/cart")
     public CartResponseDto getMyCart(Authentication authentication) {
         return cartService.getMyCart(authentication);
+    }
+
+    @DeleteMapping("/clear")
+    public void clearCart(Authentication authentication) {
+        cartService.clearCart(authentication);
     }
 }

@@ -4,7 +4,10 @@ import Sports.Outdoor.Backend.dto.response.CartResponseDto;
 import org.springframework.security.core.Authentication;
 
 public interface CartService {
-    CartResponseDto getMyCart(Authentication authentication);
 
     CartResponseDto createCartForUser(Authentication authentication);
+
+    CartResponseDto getMyCart(Authentication authentication);
+
+    void clearCart(Authentication authentication);
 }

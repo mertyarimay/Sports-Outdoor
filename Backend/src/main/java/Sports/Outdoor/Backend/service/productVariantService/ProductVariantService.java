@@ -12,6 +12,8 @@ public interface ProductVariantService {
 
     List<ProductVariantResponseDto> getAll();
 
+    List<ProductVariantResponseDto> getByProductId(Long productId);
+
     ProductVariantResponseDto update(Long id, ProductVariantRequestDto dto);
 
     boolean delete(Long id);

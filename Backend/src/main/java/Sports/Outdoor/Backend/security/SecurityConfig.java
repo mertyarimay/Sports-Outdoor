@@ -25,6 +25,7 @@ public class SecurityConfig {
 
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
 
                 .authorizeHttpRequests(auth -> auth
 
@@ -32,21 +33,32 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/users/me"
+                        ).authenticated()
 
                         // Product
                         .requestMatchers(
                                 "/api/products/getAll",
-                                "/api/products/getById/**"
+                                "/api/products/getById/**",
+                                "/api/products/getBySlug/**"
                         ).permitAll()
                         // Product Variant
                         .requestMatchers(
                                 "/api/product-variants/getAll",
-                                "/api/product-variants/getById/**"
+                                "/api/product-variants/getById/**",
+                                "/api/product-variants/product/**"
                         ).permitAll()
-                        .requestMatchers(
-                                "/api/product-images/getAll",
-                                "/api/product-images/getById/**"
-                        ).permitAll()
+                                // Product Image API
+                                .requestMatchers(
+                                        "/api/product-images/getAll",
+                                        "/api/product-images/getById/**"
+                                ).permitAll()
+
+                                // Product Image Files
+                                .requestMatchers(
+                                        "/productImage/**"
+                                ).permitAll()
                         // Category
                         .requestMatchers(
                                 "/api/categories/getAll",
@@ -64,11 +76,15 @@ public class SecurityConfig {
                                 "/api/campaigns/getAll",
                                 "/api/campaigns/getById/**"
                         ).permitAll()
-
+                        // reviews
                         .requestMatchers(
                                 "/api/reviews/product/*",
                                 "/api/reviews/product/*/average-rating",
                                 "/api/reviews/product/*/review-count"
+                        ).permitAll()
+                        // Stock
+                        .requestMatchers(
+                                "/api/stocks/getByVariantId/**"
                         ).permitAll()
 
                         // Swagger

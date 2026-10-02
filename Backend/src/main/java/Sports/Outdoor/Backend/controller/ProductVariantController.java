@@ -35,6 +35,10 @@ public class ProductVariantController {
         return productVariantResponseDtos;
 
     }
+    @GetMapping("/product/{productId}")
+    public List<ProductVariantResponseDto> getByProductId(@PathVariable Long productId) {
+        return productVariantService.getByProductId(productId);
+    }
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update/{id}")
     public ProductVariantResponseDto update(@Valid @RequestBody ProductVariantRequestDto dto,@PathVariable Long id){

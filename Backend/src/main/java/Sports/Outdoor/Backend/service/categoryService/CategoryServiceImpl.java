@@ -50,20 +50,36 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryResponseDtoList;
     }
 
+
     @Override
     public CategoryResponseDto update(Long id, CategoryRequestDto dto) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        if(category!=null){
-            category.setName(dto.getName());
-            category.setSlug(dto.getSlug());
-            Category updated = categoryRepository.save(category);
-            CategoryResponseDto categoryResponseDto=modelMapper.map(updated,CategoryResponseDto.class);
-            return categoryResponseDto;
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Güncellemek istediğiniz category bulunamadı"));
+
+        category.setName(dto.getName());
+        category.setSlug(dto.getSlug());
+
+        // Üst kategori değiştirilecekse
+        if (dto.getParentId() != null) {
+
+            Category parent = categoryRepository.findById(dto.getParentId())
+                    .orElseThrow(() -> new NotFoundException("Üst kategori bulunamadı"));
+
+            // Kategori kendisinin üst kategorisi olamaz
+            if (parent.getId().equals(category.getId())) {
+                throw new IllegalArgumentException("Kategori kendisinin üst kategorisi olamaz");
+            }
+            category.setParent(parent);
+        } else {
+            // parentId null ise ana kategori olur
+            category.setParent(null);
         }
-        throw new NotFoundException("Güncellemek istediğiniz category bulunamadı");
 
+        Category updated = categoryRepository.save(category);
+
+        return modelMapper.map(updated, CategoryResponseDto.class);
     }
-
     @Override
     public Boolean delete(Long id) {
         Category category=categoryRepository.findById(id).orElse(null);

@@ -31,6 +31,11 @@ public class StockController {
         return stockService.getById(id);
     }
 
+    @GetMapping("/getByVariantId/{variantId}")
+    public StockResponseDto getByVariantId(@PathVariable Long variantId) {
+        return stockService.getByVariantId(variantId);
+    }
+
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
     public List<StockResponseDto> getAll() {

@@ -4,28 +4,27 @@ import Sports.Outdoor.Backend.dto.request.AddressRequestDto;
 import Sports.Outdoor.Backend.dto.response.AddressResponseDto;
 import Sports.Outdoor.Backend.entity.Address;
 import Sports.Outdoor.Backend.entity.User;
+import Sports.Outdoor.Backend.exception.BusinessExcepiton;
 import Sports.Outdoor.Backend.exception.NotFoundException;
 import Sports.Outdoor.Backend.repository.AddressRepository;
 import Sports.Outdoor.Backend.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
-public class AddressServiceImpl implements AddressService{
+@RequiredArgsConstructor
+public class AddressServiceImpl implements AddressService {
+
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
 
     @Override
     public AddressResponseDto create(AddressRequestDto dto, Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User Bulunamadı"));
+        User user = getAuthenticatedUser(authentication);
 
         Address address = new Address();
 
@@ -43,26 +42,37 @@ public class AddressServiceImpl implements AddressService{
     @Override
     public List<AddressResponseDto> getMyAddresses(Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User Bulunamadı"));
+        User user = getAuthenticatedUser(authentication);
 
-       List<Address>addresses=addressRepository.findByUserId(user.getId());
-       List<AddressResponseDto>addressResponseDtos=addresses.stream().map(address -> convertToResponse(address)).collect(Collectors.toList());
-       return addressResponseDtos;
+        return addressRepository
+                .findByUserId(user.getId())
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    @Override
+    public AddressResponseDto getById(Long id, Authentication authentication) {
+
+        User user = getAuthenticatedUser(authentication);
+
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Adres bulunamadı"));
+
+        checkAddressOwnership(address, user);
+
+        return convertToResponse(address);
     }
 
     @Override
     public AddressResponseDto update(Long id, AddressRequestDto dto, Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User Bulunamadı"));
+        User user = getAuthenticatedUser(authentication);
 
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Address Bulunamadı"));
+                .orElseThrow(() -> new NotFoundException("Adres bulunamadı"));
 
-        if (!address.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("Bu Adresi Güncelleyemezssiniz");
-        }
+        checkAddressOwnership(address, user);
 
         address.setCity(dto.getCity());
         address.setDistrict(dto.getDistrict());
@@ -75,35 +85,44 @@ public class AddressServiceImpl implements AddressService{
     }
 
     @Override
-    public void delete(Long id, Authentication authentication) {
+    public Boolean delete(Long id, Authentication authentication) {
 
-        User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new NotFoundException("User Bulunamadı"));
+        User user = getAuthenticatedUser(authentication);
 
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Address Bulunamadı"));
+                .orElseThrow(() -> new NotFoundException("Adres bulunamadı"));
+
+        checkAddressOwnership(address, user);
+
+        addressRepository.delete(address);
+
+        return !addressRepository.existsById(id);
+    }
+
+    private User getAuthenticatedUser(Authentication authentication) {
+
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new BusinessExcepiton("Kullanıcı bulunamadı"));
+    }
+
+    private void checkAddressOwnership(Address address, User user) {
 
         if (!address.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("Bu Adresi Silemezssiniz.");
+
+            throw new BusinessExcepiton("Bu adrese erişim yetkiniz yok");
         }
-        addressRepository.delete(address);
     }
 
     private AddressResponseDto convertToResponse(Address address) {
 
-        AddressResponseDto dto = new AddressResponseDto();
+        AddressResponseDto response = new AddressResponseDto();
+        response.setId(address.getId());
+        response.setCity(address.getCity());
+        response.setDistrict(address.getDistrict());
+        response.setFullAddress(address.getFullAddress());
+        response.setPostalCode(address.getPostalCode());
+        response.setUserId(address.getUser().getId());
 
-        dto.setId(address.getId());
-        dto.setCity(address.getCity());
-        dto.setDistrict(address.getDistrict());
-        dto.setFullAddress(address.getFullAddress());
-        dto.setPostalCode(address.getPostalCode());
-
-        dto.setUserId(address.getUser().getId());
-        dto.setUserEmail(address.getUser().getEmail());
-
-        return dto;
+        return response;
     }
-
-
 }

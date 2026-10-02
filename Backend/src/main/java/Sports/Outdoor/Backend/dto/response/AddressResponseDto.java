@@ -19,7 +19,4 @@ public class AddressResponseDto {
     private String postalCode;
 
     private Long userId;
-
-    private String userEmail;
-
 }

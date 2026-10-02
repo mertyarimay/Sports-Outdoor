@@ -18,4 +18,6 @@ public class UserResponseDto {
     private String email;
 
     private Role role;
+
+    private Boolean active;
 }

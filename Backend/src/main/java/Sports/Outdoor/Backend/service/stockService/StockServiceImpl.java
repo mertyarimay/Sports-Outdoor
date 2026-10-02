@@ -54,6 +54,24 @@ public class StockServiceImpl implements StockService {
         stockResponseDto.setSize(stock.getVariant().getSize());
         return stockResponseDto;
     }
+    @Override
+    public StockResponseDto getByVariantId(Long variantId) {
+
+        Stock stock = stockRepository.findByVariantId(variantId).orElse(null);
+
+        if (stock == null) {
+            throw new NotFoundException("Bu varyanta ait stok bulunamadı");
+        }
+
+        StockResponseDto stockResponseDto =
+                modelMapper.map(stock, StockResponseDto.class);
+
+        stockResponseDto.setSku(stock.getVariant().getSku());
+        stockResponseDto.setColor(stock.getVariant().getColor());
+        stockResponseDto.setSize(stock.getVariant().getSize());
+
+        return stockResponseDto;
+    }
 
     @Override
     public List<StockResponseDto> getAll() {

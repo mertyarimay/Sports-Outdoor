@@ -11,7 +11,9 @@ public interface AddressService {
 
     List<AddressResponseDto> getMyAddresses(Authentication authentication);
 
+    AddressResponseDto getById(Long id, Authentication authentication);
+
     AddressResponseDto update(Long id, AddressRequestDto dto, Authentication authentication);
 
-    void delete(Long id, Authentication authentication);
+    Boolean delete(Long id, Authentication authentication);
 }

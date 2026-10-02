@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class CartItemResponseDto {
-    private Long id;
 
-    private Integer quantity;
+    private Long id;
 
     private Long cartId;
 
@@ -23,4 +24,16 @@ public class CartItemResponseDto {
     private String size;
 
     private String productName;
+
+    private String brandName;
+
+    private String imageUrl;
+
+    private BigDecimal price;
+
+    private BigDecimal discountPrice;
+
+    private Integer quantity;
+
+    private BigDecimal itemTotal;
 }

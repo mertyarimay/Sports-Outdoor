@@ -14,6 +14,10 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     List<Product>findByCategoryId(Long categoryId);
     List<Product> findByBrandId(Long brandId);
     List<Product> findByActiveTrue();
+    Optional<Product> findByIdAndActiveTrue(Long id);
+
+    Optional<Product> findBySlugAndActiveTrue(String slug);
+
 
     Page<Product> findByNameContainingIgnoreCase(    //product ın içinde geçen kelimelere göre sayfalama getirme
             String keyword,
