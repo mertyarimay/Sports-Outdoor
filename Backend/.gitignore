@@ -1,33 +1,50 @@
-HELP.md
+# ==========================================
+# ⚠️ HASSAS VE GİZLİ AYAR DOSYALARI (SPRING BOOT)
+# ==========================================
+**/src/main/resources/application.properties
+**/src/main/resources/application.yml
+**/src/main/resources/application.properties.local
+**/src/main/resources/application.yml.local
+
+# ==========================================
+# 📦 ÖN YÜZ (FRONTEND & NODE_MODULES)
+# ==========================================
+node_modules/
+.pnpm-store/
+.yarn/
+dist/
+build/
+.oxlintrc.json
+
+# ==========================================
+# ☕ JAVA & MAVEN / GRADLE DERLEME ÇIKTILARI
+# ==========================================
 target/
+.gradle/
+HELP.md
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# ==========================================
+# 💻 IDE & EDİTÖR AYARLARI (INTELLIJ, VS CODE, STS)
+# ==========================================
+.idea/
 *.iws
 *.iml
 *.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+out/
 .vscode/
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+
+# ==========================================
+# 🍏 İŞLETİM SİSTEMİ DOSYALARI
+# ==========================================
+.DS_Store
+Thumbs.db
+*.log
