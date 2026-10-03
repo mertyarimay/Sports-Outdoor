@@ -2,7 +2,9 @@
 # ⚠️ HASSAS VE GİZLİ AYAR DOSYALARI (SPRING BOOT)
 # ==========================================
 **/src/main/resources/application.properties
+**/src/main/resources/application-*.properties
 **/src/main/resources/application.yml
+**/src/main/resources/application-*.yml
 **/src/main/resources/application.properties.local
 **/src/main/resources/application.yml.local
 
